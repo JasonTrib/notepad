@@ -1,6 +1,12 @@
 import "./App.css";
 import React from "react";
-import MyDialog from "./Modal.js";
+import { NotesProvider } from "./NotesContext";
+import NoteDialog from "./Modal.js";
+import Notelist from "./Notelist";
+import NoteActions from "./NoteActions";
+import SearchAddNote from "./SearchAddNote";
+
+import { makeStyles } from "@material-ui/core/styles";
 import {
     Typography,
     Divider,
@@ -8,33 +14,8 @@ import {
     CardHeader,
     CardContent,
 } from "@material-ui/core";
-import {
-    makeStyles,
-    ThemeProvider,
-    createMuiTheme,
-} from "@material-ui/core/styles";
 
-import Notelist from "./Notelist";
-import { NotesProvider } from "./NotesContext";
-import NoteActions from "./NoteActions";
-import { SearchAddNote } from "./SearchAddNote";
-
-const theme = createMuiTheme({
-    // typography: {
-    //     h4: {
-    //         fontSize: 24,
-    //     },
-    // },
-    // palette: {
-    //     accent1: {
-    //         backgroundColor: purple[500],
-    //         color: "white",
-    //         marginBottom: 20,
-    //     },
-    // },
-});
-
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     root: {
         position: "absolute",
         top: "4%",
@@ -58,14 +39,12 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
     return (
-        <ThemeProvider theme={theme}>
-            <div className="App">
-                <NotesProvider>
-                    <MyCard />
-                    <MyDialog />
-                </NotesProvider>
-            </div>
-        </ThemeProvider>
+        <div className="App">
+            <NotesProvider>
+                <MyCard />
+                <NoteDialog />
+            </NotesProvider>
+        </div>
     );
 }
 

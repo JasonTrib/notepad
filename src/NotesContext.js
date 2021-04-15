@@ -1,13 +1,14 @@
 import React, { createContext, useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
+
 import {
     MyPersonIcon,
     MyHomeIcon,
     MySchoolIcon,
     MyWorkIcon,
+    MyShoppingCartIcon,
+    MyFlightIcon,
 } from "./CustomIcons";
-import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
-import FlightIcon from "@material-ui/icons/Flight";
 
 export const NotesContext = createContext();
 
@@ -17,16 +18,17 @@ export const NotesProvider = (props) => {
     const [notesFiltered, setNotesFiltered] = useState(notes);
     const [checkedNotes, setCheckedNotes] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [open, setOpen] = useState(false);
-    const [modalEditNote, setModalEditNote] = useState(null);
+
+    const [modal, setModal] = useState({ open: false, editNote: null });
+
     const taglist = [
         null,
         <MyPersonIcon />,
         <MyHomeIcon />,
         <MySchoolIcon />,
         <MyWorkIcon />,
-        <ShoppingCartIcon />,
-        <FlightIcon />,
+        <MyShoppingCartIcon />,
+        <MyFlightIcon />,
     ];
 
     useEffect(() => {
@@ -82,11 +84,9 @@ export const NotesProvider = (props) => {
             newCheckedNotes = demoNotes.map((note) => {
                 return { id: note.id, value: false };
             });
-            // console.log("the demoNotes: " + JSON.stringify(newCheckedNotes));
         }
 
         setCheckedNotes(newCheckedNotes);
-        // console.log("CHECKED NOTES: " + JSON.stringify(newCheckedNotes));
     }, []);
 
     useEffect(() => {
@@ -104,10 +104,8 @@ export const NotesProvider = (props) => {
                 setCheckedNotes,
                 searchTerm,
                 setSearchTerm,
-                open,
-                setOpen,
-                modalEditNote,
-                setModalEditNote,
+                modal,
+                setModal,
                 taglist,
             }}
         >
@@ -115,3 +113,5 @@ export const NotesProvider = (props) => {
         </NotesContext.Provider>
     );
 };
+
+export default NotesContext;

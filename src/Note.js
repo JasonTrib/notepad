@@ -1,13 +1,15 @@
-import React, { useContext } from "react";
 import "./App.css";
-import { NotesContext } from "./NotesContext";
+import React, { useContext } from "react";
+import NotesContext from "./NotesContext";
 import CheckCircle from "./CheckCircle";
-import { Button, Typography } from "@material-ui/core";
+
 import { makeStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
 import BookmarkIcon from "@material-ui/icons/Bookmark";
 import BookmarkBorderIcon from "@material-ui/icons/BookmarkBorder";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     btnNote2: {
         border: 0,
         borderTopLeftRadius: 10,
@@ -34,37 +36,18 @@ const useStyles = makeStyles((theme) => ({
         borderLeftWidth: 1,
         paddingLeft: 4,
         maxWidth: 50,
-        // "& .MuiButton-label": {
-        //     maxWidth: 24,
-        // },
     },
 }));
 
-// const taglist = [
-//     null,
-//     <MyPersonIcon />,
-//     <MyHomeIcon />,
-//     <MySchoolIcon />,
-//     <MyWorkIcon />,
-// ];
-
-const Note = ({ note, selected }) => {
+export const Note = ({ note, selected }) => {
     const classes = useStyles();
-    const { notes, setNotes, setOpen, setModalEditNote, taglist } = useContext(
-        NotesContext
-    );
-
-    // React.useEffect(() => {
-    //     console.log("selected? " + note.id.slice(0, 8) + " " + selected);
-    // }, [selected]);
+    const { notes, setNotes, setModal, taglist } = useContext(NotesContext);
 
     const handleClickOpen = () => {
-        setModalEditNote(note);
-        setOpen(true);
+        setModal({ open: true, editNote: note });
     };
 
     const handleBookmark = () => {
-        // console.log("bookmark");
         const newNotes = notes.map((currNote) => {
             if (currNote === note) {
                 currNote.bookmarked = !note.bookmarked;
@@ -72,7 +55,6 @@ const Note = ({ note, selected }) => {
             return currNote;
         });
         setNotes(newNotes);
-        // console.log(newNotes);
     };
 
     return (
@@ -103,7 +85,11 @@ const Note = ({ note, selected }) => {
                             {taglist[note.tag]}
                         </div>
                     </Button>
-                    <Button className={classes.btnBM} onClick={handleBookmark}>
+                    <Button
+                        className={classes.btnBM}
+                        aria-label="bookmark"
+                        onClick={handleBookmark}
+                    >
                         {note.bookmarked ? (
                             <BookmarkIcon />
                         ) : (

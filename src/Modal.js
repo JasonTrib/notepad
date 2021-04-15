@@ -1,43 +1,29 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
-import { NotesContext } from "./NotesContext";
+import NotesContext from "./NotesContext";
 import { v4 as uuidv4 } from "uuid";
+
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
-
-import { makeStyles, withStyles } from "@material-ui/core/styles";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import InputBase from "@material-ui/core/InputBase";
+import Typography from "@material-ui/core/Typography";
 
-import { Typography } from "@material-ui/core";
-
-const SelectInput = withStyles((theme) => ({
+const SelectInput = withStyles(() => ({
     input: {
         height: "22px",
         boxShadow: "1px 2px 4px 0px rgba(0,0,0,.25)",
         borderRadius: 4,
         position: "relative",
-        backgroundColor: theme.palette.background.paper,
+        backgroundColor: "white",
         border: "3px solid transparent",
         fontSize: 16,
         padding: "10px 26px 10px 12px",
-        // transition: theme.transitions.create(["border-color"]),
-        fontFamily: [
-            "-apple-system",
-            "BlinkMacSystemFont",
-            '"Segoe UI"',
-            "Roboto",
-            '"Helvetica Neue"',
-            "Arial",
-            "sans-serif",
-            '"Apple Color Emoji"',
-            '"Segoe UI Emoji"',
-            '"Segoe UI Symbol"',
-        ].join(","),
         "&:hover": {
             backgroundColor: "#e6f3ff",
         },
@@ -49,8 +35,7 @@ const SelectInput = withStyles((theme) => ({
     },
 }))(InputBase);
 
-const useStyles = makeStyles((theme) => ({
-    // modal: {},
+const useStyles = makeStyles(() => ({
     modalTitleTag: {
         marginTop: 0,
         marginBottom: 10,
@@ -67,7 +52,6 @@ const useStyles = makeStyles((theme) => ({
         textIndent: 10,
         outline: "none",
         borderRadius: "4px",
-        // transition: theme.transitions.create(["border-color"]),
         border: "3px solid transparent",
         "&:hover": {
             backgroundColor: "#e6f3ff",
@@ -89,13 +73,13 @@ const useStyles = makeStyles((theme) => ({
     },
     contentContainer: {},
     contentArea: {
+        height: "16em",
         boxSizing: "border-box",
         width: "100%",
         resize: "none",
         padding: "10px 10px",
         backgroundColor: "white",
         boxShadow: "1px 2px 4px 0px rgba(0,0,0,.25)",
-        // transition: theme.transitions.create(["border-color"]),
         outline: "none",
         borderRadius: "4px",
         border: "3px solid transparent",
@@ -137,7 +121,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function ScrollDialog() {
+export const NoteDialog = () => {
     const classes = useStyles();
     const descriptionElementRef = useRef(null);
     const [title, setTitle] = useState(null);
@@ -149,40 +133,32 @@ export default function ScrollDialog() {
         notes,
         setNotes,
         setCheckedNotes,
-        open,
-        setOpen,
-        modalEditNote,
+        modal,
+        setModal,
         taglist,
     } = useContext(NotesContext);
 
-    // useEffect(() => {
-    //     console.log(
-    //         "editNoteModal useEffect: " + JSON.stringify(modalEditNote)
-    //     );
-    // }, [modalEditNote]);
-
     useEffect(() => {
-        if (open) {
+        if (modal.open) {
             const { current: descriptionElement } = descriptionElementRef;
             if (descriptionElement !== null) {
                 descriptionElement.focus();
             }
 
-            if (modalEditNote) {
-                setTitle(modalEditNote.title);
-                setContent(modalEditNote.content);
-                setTag(modalEditNote.tag);
+            if (modal.editNote) {
+                setTitle(modal.editNote.title);
+                setContent(modal.editNote.content);
+                setTag(modal.editNote.tag);
             } else {
                 setTag(0);
             }
         }
-    }, [open]);
+    }, [modal]);
 
     const handleClose = () => {
         setTitle(null);
         setContent(null);
-        // setTag(0);
-        setOpen(false);
+        setModal({ open: false, editNote: modal.editNote });
     };
 
     const handleChange = (event) => {
@@ -214,7 +190,7 @@ export default function ScrollDialog() {
 
     const handleEditNote = () => {
         const newNotes = notes.map((x) => {
-            if (x.id === modalEditNote.id) {
+            if (x.id === modal.editNote.id) {
                 return {
                     id: x.id,
                     title: titleRef.current.value.trim()
@@ -228,9 +204,7 @@ export default function ScrollDialog() {
             }
             return x;
         });
-
         setNotes(newNotes);
-        // console.log("handle edit note: " + JSON.stringify(newNotes));
         handleClose();
     };
 
@@ -240,13 +214,13 @@ export default function ScrollDialog() {
                 fullWidth={true}
                 maxWidth="sm"
                 className={classes.modal}
-                open={open}
+                open={modal.open}
                 onClose={handleClose}
-                aria-labelledby="scroll-dialog-title"
-                aria-describedby="scroll-dialog-description"
+                aria-labelledby="dialog-title"
+                aria-describedby="dialog-description"
             >
                 <DialogTitle
-                    id="scroll-dialog-title"
+                    id="dialog-title"
                     style={{
                         paddingTop: "10px",
                         paddingBottom: "10px",
@@ -262,7 +236,7 @@ export default function ScrollDialog() {
                             fontWeight: "600",
                         }}
                     >
-                        {modalEditNote ? "Edit note" : "New note"}
+                        {modal.editNote ? "Edit note" : "New note"}
                     </Typography>
                 </DialogTitle>
                 <DialogContent
@@ -273,7 +247,7 @@ export default function ScrollDialog() {
                     <div className={classes.modalTitleTag}>
                         <input
                             type="text"
-                            autoFocus={!modalEditNote}
+                            autoFocus={!modal.editNote}
                             defaultValue={title}
                             ref={titleRef}
                             placeholder="Cookie recipe"
@@ -281,27 +255,12 @@ export default function ScrollDialog() {
                         />
                         <FormControl className={classes.selectForm}>
                             <Select
-                                labelId="demo-customized-select-label"
-                                id="demo-customized-select"
+                                labelId="select-tag"
+                                id="select"
                                 value={tag}
                                 onChange={handleChange}
                                 input={<SelectInput />}
                             >
-                                {/* <MenuItem value={0}>
-                                    <em>None</em>
-                                </MenuItem>
-                                <MenuItem value={1}>
-                                    <PersonIcon />
-                                </MenuItem>
-                                <MenuItem value={2}>
-                                    <HomeIcon />
-                                </MenuItem>
-                                <MenuItem value={3}>
-                                    <SchoolIcon />
-                                </MenuItem>
-                                <MenuItem value={4}>
-                                    <WorkIcon />
-                                </MenuItem> */}
                                 {taglist.map((item, idx) => {
                                     return (
                                         <MenuItem key={uuidv4()} value={idx}>
@@ -316,9 +275,8 @@ export default function ScrollDialog() {
                         <textarea
                             className={classes.contentArea}
                             ref={contentRef}
-                            autoFocus={modalEditNote}
+                            autoFocus={modal.editNote}
                             defaultValue={content}
-                            rows={8}
                             placeholder="-Eggs
 -Milk
 -Baking soda
@@ -355,7 +313,7 @@ export default function ScrollDialog() {
                         <Button
                             className={classes.btnDone}
                             onClick={
-                                modalEditNote ? handleEditNote : handleAddNote
+                                modal.editNote ? handleEditNote : handleAddNote
                             }
                             color="primary"
                         >
@@ -374,4 +332,6 @@ export default function ScrollDialog() {
             </Dialog>
         </div>
     );
-}
+};
+
+export default NoteDialog;

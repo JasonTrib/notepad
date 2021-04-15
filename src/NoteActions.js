@@ -1,17 +1,18 @@
-import React, { useState, useEffect, useContext } from "react";
 import "./App.css";
-import { NotesContext } from "./NotesContext";
-import { Button } from "@material-ui/core";
+import React, { useState, useEffect, useContext } from "react";
+import NotesContext from "./NotesContext";
+import classNames from "classnames";
+
 import { makeStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
 import DeleteIcon from "@material-ui/icons/Delete";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import EventIcon from "@material-ui/icons/Event";
 import BookmarksIcon from "@material-ui/icons/Bookmarks";
 import TitleIcon from "@material-ui/icons/Title";
-import classNames from "classnames";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     btn: {
         backgroundColor: "#424242",
         color: "white",
@@ -25,16 +26,6 @@ const useStyles = makeStyles((theme) => ({
         borderBottom: "5px solid transparent",
         transitionDuration: "0.1s",
     },
-    // btnDel: {
-    //     backgroundColor: "#ff5252",
-    //     color: "white",
-    //     height: "50px",
-    //     borderRadius: 0,
-    //     "&:hover": {
-    //         backgroundColor: "#d11313",
-    //     },
-    //     flex: " 1 1 80px",
-    // },
     btnDel: {
         backgroundColor: "#ff2b2b",
         color: "white",
@@ -45,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
         },
         flex: " 1 1 80px",
     },
-    btnDel2: {
+    btnDelDisabled: {
         backgroundColor: "#ff8080",
         color: "white",
 
@@ -56,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const NoteActions = () => {
+export const NoteActions = () => {
     const classes = useStyles();
     const [notesOrdered, setNotesOrdered] = useState(null);
     const [ordering, setOrdering] = useState(null);
@@ -71,7 +62,6 @@ const NoteActions = () => {
     } = useContext(NotesContext);
 
     useEffect(() => {
-        // console.log("> areNotesSelected useEffect");
         const res = checkedNotes.filter((x) => x.value).length !== 0;
         areNotesSelected(res);
     }, [checkedNotes]);
@@ -84,9 +74,6 @@ const NoteActions = () => {
             .filter((x) => x);
 
         const newNotes = notes.filter((note) => !deletionIDs.includes(note.id));
-        // console.log("HANDLE DELETION: " + JSON.stringify(deletionIDs));
-        // console.log("HANDLE DELETION 2: " + JSON.stringify(newNotes));
-
         const newCheckedNotes = newNotes.map((note) => {
             return { id: note.id, value: false };
         });
@@ -95,7 +82,6 @@ const NoteActions = () => {
     };
 
     const handleBookmarked = () => {
-        // console.log(bookmarked);
         setBookmarked(!bookmarked);
     };
 
@@ -113,20 +99,10 @@ const NoteActions = () => {
                 setOrdering("old");
             }
         }
-        // console.log("in handleOrdering " + orderType);
     };
 
     useEffect(() => {
-        orderNotes();
-        // console.log(">>> orderNotes useEffect " + ordering);
-    }, [notes, ordering]);
-
-    useEffect(() => {
-        filterBookmarked();
-        // console.log(">>> filterBookmarked useEffect " + bookmarked);
-    }, [notesOrdered, bookmarked]);
-
-    const orderNotes = () => {
+        // order notes
         let orderedNotes = [...notes];
         orderedNotes.sort((a, b) => {
             if (ordering === "asc") return a.title.localeCompare(b.title);
@@ -136,11 +112,10 @@ const NoteActions = () => {
             else return a.date <= b.date ? -1 : 1;
         });
         setNotesOrdered(orderedNotes);
-        // console.log(">>>" + JSON.stringify(notesSorted));
-    };
+    }, [notes, ordering]);
 
-    const filterBookmarked = () => {
-        // console.log("inside filter bookmarked");
+    useEffect(() => {
+        // filter bookmarked notes
         const newNotes = notesOrdered
             ? notesOrdered.filter((note) => {
                   if (bookmarked) return note.bookmarked;
@@ -149,15 +124,14 @@ const NoteActions = () => {
             : notes;
 
         setNotesFiltered(newNotes);
-        // console.log("bookmarked: " + bookmarked);
-        // console.log(newNotes);
-    };
+    }, [notesOrdered, bookmarked]);
 
     return (
         <>
             <div className="toolbar-container">
                 <Button
                     className={classes.btn}
+                    aria-label="sort by text"
                     onClick={() => handleOrdering("text")}
                     style={
                         ordering === "asc" || ordering === "desc"
@@ -183,6 +157,7 @@ const NoteActions = () => {
                 </Button>
                 <Button
                     className={classes.btn}
+                    aria-label="sort by date"
                     onClick={() => handleOrdering("date")}
                     style={
                         ordering === "new" || ordering === "old"
@@ -208,6 +183,7 @@ const NoteActions = () => {
                 </Button>
                 <Button
                     className={classes.btn}
+                    aria-label="show bookmarked"
                     onClick={handleBookmarked}
                     style={
                         bookmarked === true
@@ -218,10 +194,11 @@ const NoteActions = () => {
                     <BookmarksIcon />
                 </Button>
                 <Button
+                    aria-label="delete selected notes"
                     disableRipple={!notesSelected}
                     className={classNames(
                         classes.btnDel,
-                        notesSelected ? null : classes.btnDel2
+                        notesSelected ? null : classes.btnDelDisabled
                     )}
                     onClick={handleNoteDeletion}
                 >

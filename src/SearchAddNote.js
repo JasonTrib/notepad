@@ -1,11 +1,13 @@
 import "./App.css";
 import React, { useContext } from "react";
-import { Button, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import AddIcon from "@material-ui/icons/Add";
-import { NotesContext } from "./NotesContext";
+import NotesContext from "./NotesContext";
 
-const useStyles = makeStyles((theme) => ({
+import { makeStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
+import AddIcon from "@material-ui/icons/Add";
+
+const useStyles = makeStyles(() => ({
     searchField: {
         verticalAlign: "middle",
         lineHeight: "48px",
@@ -39,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: "0px",
         minWidth: "80px",
         flex: " 1 1 25%",
-        boxShadow: "0px 2px 10px rgba(0,0,0,0.25)",
+        boxShadow: "1px 2px 10px rgba(0,0,0,0.25)",
         "&:hover": {
             backgroundColor: "#006969",
         },
@@ -48,13 +50,10 @@ const useStyles = makeStyles((theme) => ({
 
 export const SearchAddNote = () => {
     const classes = useStyles();
-    const { setSearchTerm, setOpen, setModalEditNote } = useContext(
-        NotesContext
-    );
+    const { setSearchTerm, setModal } = useContext(NotesContext);
 
     const handleClickOpen = () => {
-        setModalEditNote(null);
-        setOpen(true);
+        setModal({ open: true, editNote: null });
     };
 
     return (
@@ -82,7 +81,11 @@ export const SearchAddNote = () => {
                         setSearchTerm(e.target.value.trim());
                     }}
                 />
-                <Button className={classes.btnAdd} onClick={handleClickOpen}>
+                <Button
+                    className={classes.btnAdd}
+                    aria-label="new note"
+                    onClick={handleClickOpen}
+                >
                     <AddIcon />
                     <Typography>Note</Typography>
                 </Button>
@@ -90,3 +93,5 @@ export const SearchAddNote = () => {
         </>
     );
 };
+
+export default SearchAddNote;

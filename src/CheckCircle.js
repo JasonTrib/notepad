@@ -1,10 +1,12 @@
 import React, { useContext } from "react";
-import { NotesContext } from "./NotesContext";
-import { FormControlLabel, Checkbox } from "@material-ui/core";
+import NotesContext from "./NotesContext";
+
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
 import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
 import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
 
-const CheckCircle = ({ note, selected }) => {
+export const CheckCircle = ({ note, selected }) => {
     const { checkedNotes, setCheckedNotes } = useContext(NotesContext);
 
     const handleSelect = (e) => {
@@ -15,13 +17,14 @@ const CheckCircle = ({ note, selected }) => {
             return curr;
         });
         setCheckedNotes(newCheckedNotes);
-        // console.log("HANDLE SELECT: " + JSON.stringify(newCheckedNotes));
     };
 
     return (
         <>
             <FormControlLabel
-                style={{ paddingLeft: "11px" }}
+                style={{
+                    marginLeft: "4px",
+                }}
                 control={
                     <Checkbox
                         onChange={handleSelect}

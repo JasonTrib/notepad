@@ -1,8 +1,9 @@
 import React, { useContext } from "react";
+import NotesContext from "./NotesContext";
 import Note from "./Note";
-import { NotesContext } from "./NotesContext";
-import { Divider } from "@material-ui/core";
 import { v4 as uuidv4 } from "uuid";
+
+import Divider from "@material-ui/core/Divider";
 
 const Notelist = () => {
     const { checkedNotes, notesFiltered, searchTerm } = useContext(
@@ -14,8 +15,8 @@ const Notelist = () => {
             if (searchTerm === "") {
                 return val;
             } else if (
-                val.title.includes(searchTerm.toLowerCase()) ||
-                val.content.includes(searchTerm.toLowerCase())
+                val.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                val.content.toLowerCase().includes(searchTerm.toLowerCase())
             ) {
                 return val;
             }
