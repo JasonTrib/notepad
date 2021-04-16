@@ -1,7 +1,7 @@
 import "./App.css";
 import React, { useState, useEffect, useContext } from "react";
 import NotesContext from "./NotesContext";
-import classNames from "classnames";
+import clss from "classnames";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -12,7 +12,7 @@ import EventIcon from "@material-ui/icons/Event";
 import BookmarksIcon from "@material-ui/icons/Bookmarks";
 import TitleIcon from "@material-ui/icons/Title";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     btn: {
         backgroundColor: "#424242",
         color: "white",
@@ -130,7 +130,7 @@ export const NoteActions = () => {
         <>
             <div className="toolbar-container">
                 <Button
-                    className={classes.btn}
+                    className={clss(classes.btn, "tooltip")}
                     aria-label="sort by text"
                     onClick={() => handleOrdering("text")}
                     style={
@@ -154,9 +154,10 @@ export const NoteActions = () => {
                     ) : (
                         <TitleIcon />
                     )}
+                    <span className="tooltiptext">sort by title</span>
                 </Button>
                 <Button
-                    className={classes.btn}
+                    className={clss(classes.btn, "tooltip")}
                     aria-label="sort by date"
                     onClick={() => handleOrdering("date")}
                     style={
@@ -180,23 +181,27 @@ export const NoteActions = () => {
                     ) : (
                         <EventIcon />
                     )}
+                    <span className="tooltiptext">sort by date</span>
                 </Button>
                 <Button
-                    className={classes.btn}
+                    className={clss(classes.btn, "tooltip")}
                     aria-label="show bookmarked"
                     onClick={handleBookmarked}
                     style={
-                        bookmarked === true
+                        bookmarked
                             ? { borderBottom: "5px solid #ffc800" }
                             : null
                     }
                 >
                     <BookmarksIcon />
+                    <span className="tooltiptext">
+                        {bookmarked ? "hide bookmarked" : "show bookmarked"}
+                    </span>
                 </Button>
                 <Button
                     aria-label="delete selected notes"
                     disableRipple={!notesSelected}
-                    className={classNames(
+                    className={clss(
                         classes.btnDel,
                         notesSelected ? null : classes.btnDelDisabled
                     )}
